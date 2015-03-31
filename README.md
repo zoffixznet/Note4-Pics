@@ -11,7 +11,7 @@ sudo apt-get install mtp-tools
 
 ## Usage
 
-Just connect your phone via USB and call run get-pics.pl. By default,
+Just connect your phone via USB and run `get-pics.pl`. By default,
 it will retrieve all the pics you've taken in the past hour.
 
 You can use `-days` flag to retrieve pics taken in the past day.
