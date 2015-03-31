@@ -5,6 +5,7 @@ use warnings;
 use Mojo::Base -base;
 use Getopt::Long;
 use List::AllUtils qw/natatime/;
+sub DEBUG { 1 }
 
 GetOptions(
     'days' => \(my $days = 0),
@@ -12,8 +13,13 @@ GetOptions(
 ) or die("Error in command line arguments\n");
 
 say 'Fetching file list (this usually takes some time)';
-
 my $files = `mtp-files`;
+if (DEBUG) {
+    say "$files\n\n";
+    open my $fh, '>', 'out.txt' or die $!;
+    say $fh $files;
+}
+
 my $iter = natatime(
     2,
     $files =~ / ID: \s+ (\d+) .+? Filename: \s+ (\S+\.(?:jpg|png)) /xsg
@@ -33,7 +39,7 @@ my $day_re  = $days  ? qr/(?:$day |${\($day -1)})/x : qr/\d{2}/;
 my $screenshot_re = qr/^\d+ Screenshot_$year-$month-$day_re-$hour_re/;
 my $pic_re        = qr/^\d+ $year$month${day_re}_$hour_re/;
 
-# say for "Originals:", @files, $screenshot_re, $pic_re;
+if (DEBUG){ say for "Originals:", @files, $screenshot_re, $pic_re; }
 @files = grep /$screenshot_re/ || /$pic_re/, @files;
 
 say "Gonna fetch these files:\n@files";
