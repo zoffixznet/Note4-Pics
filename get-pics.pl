@@ -22,7 +22,8 @@ if (DEBUG) {
 
 my $iter = natatime(
     2,
-    $files =~ / ID: \s+ (\d+) .+? Filename: \s+ (\S+\.(?:jpg|png)) /xsg
+    $files =~ /File\s+ID: \s+ (\d+) \n
+        \s+ Filename: \s+ (\S+\.(?:jpg|png)) /xsg
 );
 
 my @files;
@@ -31,10 +32,13 @@ while ( my @vals = $iter->() ) { push @files, join ' ', @vals; }
 my ( $year, $month, $day, $hour ) = (localtime)[5, 4, 3, 2];
 $year += 1900;
 $month = sprintf '%02d', $month+1;
+$hour = sprintf '%02d', $hour;
 
 # I'm too lazy to support checking whether we rolled over, so... meh
-my $hour_re = $hours ? qr/(?:$hour|${\($hour-1)})/x : qr/\d{2}/;
-my $day_re  = $days  ? qr/(?:$day |${\($day -1)})/x : qr/\d{2}/;
+my $hour_re = $hours
+    ? qr/(?:$hour|${\(sprintf '%02d', $hour-1)})/x : qr/\d{2}/;
+my $day_re  = $days
+    ? qr/(?:$day |${\(sprintf '%02d', $day -1)})/x : qr/\d{2}/;
 
 my $screenshot_re = qr/^\d+ Screenshot_$year-$month-$day_re-$hour_re/;
 my $pic_re        = qr/^\d+ $year$month${day_re}_$hour_re/;
